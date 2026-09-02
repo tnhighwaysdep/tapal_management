@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TAPAL CHASE - Government Letter & File Tracking System</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@400;700;900&family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Roboto+Slab:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Early Theme Bootstrap (Prevents theme flashing on load) -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('tapal_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css?v=20260827_20">
+
+  <!-- Chart.js & SheetJS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+  <!-- Official Government Login Portal Overlay -->
+  <div id="login-screen" class="login-screen-overlay">
+    <!-- Top Utility Bar on Login Screen -->
+    <div class="gov-utility-bar gov-utility-bar-login">
+      <div class="gov-utility-left">
+        <span class="gov-utility-state"><i class="ri-government-line"></i> Government of Tamil Nadu • தமிழ்நாடு அரசு</span>
+        <span class="gov-utility-date"><i class="ri-calendar-line"></i> <span class="gov-live-date"></span></span>
+      </div>
+      <div class="gov-utility-right">
+        <div class="gov-text-resizer" role="group" aria-label="Text size adjustments">
+          <button type="button" class="gov-resizer-btn" data-size="sm" title="Small Text">A-</button>
+          <button type="button" class="gov-resizer-btn active" data-size="md" title="Default Text">A</button>
+          <button type="button" class="gov-resizer-btn" data-size="lg" title="Large Text">A+</button>
+        </div>
+        <button type="button" class="gov-theme-toggle-btn" title="Toggle Theme" aria-label="Toggle Theme">
+          <i class="ri-moon-fill theme-toggle-icon"></i>
+          <span class="theme-toggle-text">Dark Mode</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top Tricolor Accent Ribbon -->
+    <div class="gov-top-tricolor-bar"></div>
+
+    <div class="login-card-container">
+      <!-- Card Header Tricolor Accent Strip -->
+      <div class="login-card-tricolor"></div>
+
+      <div class="login-brand-header">
+        <div class="login-emblem-wrapper">
+          <div class="login-emblem-seal">
+            <i class="ri-government-fill"></i>
+          </div>
+        </div>
+        <div class="login-dept-tag">GOVERNMENT OF TAMIL NADU</div>
+        <div class="login-subdept-tag">HIGHWAYS DEPARTMENT • NATIONAL HIGHWAYS WING</div>
+        <h2 class="login-portal-title">TAPAL CHASE</h2>
+        <p class="login-portal-subtitle">Government Letter & File Tracking System</p>
+        <div class="login-security-badge">
+          <i class="ri-shield-keyhole-line"></i> Official Authentication Gateway
+        </div>
+      </div>
+
+      <form id="login-form" class="login-form">
+        <div class="login-field-group">
+          <label for="login-username"><i class="ri-user-follow-line"></i> Official Username / Designation</label>
+          <div class="login-input-wrapper">
+            <i class="ri-user-3-line login-input-icon"></i>
+            <input type="text" id="login-username" class="custom-date-text-input gov-login-input"
+              placeholder="Enter official username (e.g. admin)" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="login-field-group">
+          <label for="login-password"><i class="ri-lock-2-line"></i> Password</label>
+          <div class="login-input-wrapper">
+            <i class="ri-key-2-line login-input-icon"></i>
+            <input type="password" id="login-password" class="custom-date-text-input gov-login-input" placeholder="Enter secure password"
+              required autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="login-field-group">
+          <label for="login-wing"><i class="ri-building-line"></i> Assigned Section / Wing</label>
+          <div class="login-input-wrapper">
+            <i class="ri-community-line login-input-icon"></i>
+            <select id="login-wing" class="filter-select gov-login-select">
+              <option value="PLANNING / BUDGET">PLANNING / BUDGET (CE Office)</option>
+              <option value="ROADS">ROADS & HIGHWAYS</option>
+              <option value="BRIDGES">BRIDGES & STRUCTURES</option>
+              <option value="EXECUTIVE">EXECUTIVE CEO</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block gov-login-btn">
+          <i class="ri-login-circle-fill"></i> Secure Portal Login
+        </button>
+      </form>
+
+      <!-- Quick Test Accounts -->
+      <div class="login-quick-accounts">
+        <div class="quick-accounts-header">
+          <i class="ri-shield-user-line"></i>
+          <span>Demo Official Accounts (Click to Login)</span>
+        </div>
+        <div class="quick-accounts-grid">
+          <button type="button" id="btn-demo-admin" class="btn-demo-card" onclick="quickLogin('admin', 'admin123', 'EXECUTIVE')">
+            <span class="demo-card-role">Chief Engineer</span>
+            <span class="demo-card-id">admin • Executive</span>
+          </button>
+          <button type="button" id="btn-demo-se" class="btn-demo-card" onclick="quickLogin('se_slm', 'se123', 'PLANNING / BUDGET')">
+            <span class="demo-card-role">SE (Salem)</span>
+            <span class="demo-card-id">se_slm • Planning</span>
+          </button>
+          <button type="button" id="btn-demo-de" class="btn-demo-card" onclick="quickLogin('de_cbe', 'de123', 'ROADS')">
+            <span class="demo-card-role">DE (Coimbatore)</span>
+            <span class="demo-card-id">de_cbe • Roads</span>
+          </button>
+          <button type="button" id="btn-demo-planning" class="btn-demo-card" onclick="quickLogin('planning', 'plan123', 'PLANNING / BUDGET')">
+            <span class="demo-card-role">Planning Officer</span>
+            <span class="demo-card-id">planning • Budget</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer-security">
+        <p><i class="ri-lock-line"></i> Authorized Government Personnel Only • National Highways CEO, Chennai</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" style="display: none;">
+    <!-- Accessible Skip to Content Target -->
+    <div id="main-content-anchor" tabindex="-1"></div>
+
+    <!-- Top Utility Bar (Accessible Indian Government Standard) -->
+    <div class="gov-utility-bar">
+      <div class="gov-utility-left">
+        <a href="#main-content-anchor" class="gov-skip-link">Skip to Main Content</a>
+        <span class="gov-utility-state"><i class="ri-government-line"></i> Government of Tamil Nadu • நெடுஞ்சாலைத்துறை</span>
+        <span class="gov-utility-date"><i class="ri-calendar-line"></i> <span class="gov-live-date"></span></span>
+      </div>
+      <div class="gov-utility-right">
+        <div class="gov-text-resizer" role="group" aria-label="Text size adjustment">
+          <button type="button" class="gov-resizer-btn" data-size="sm" title="Decrease Font Size (A-)">A-</button>
+          <button type="button" class="gov-resizer-btn active" data-size="md" title="Normal Font Size (A)">A</button>
+          <button type="button" class="gov-resizer-btn" data-size="lg" title="Increase Font Size (A+)">A+</button>
+        </div>
+        <button type="button" class="gov-theme-toggle-btn" id="btn-theme-toggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <i class="ri-moon-fill theme-toggle-icon" id="theme-toggle-icon"></i>
+          <span class="theme-toggle-text" id="theme-toggle-text">Dark Mode</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Government Masthead / Header -->
+    <header class="gov-main-masthead">
+      <div class="gov-masthead-left">
+        <div class="gov-masthead-seal">
+          <i class="ri-government-fill"></i>
+        </div>
+        <div class="gov-masthead-titles">
+          <div class="gov-masthead-dept">GOVERNMENT OF TAMIL NADU • HIGHWAYS DEPARTMENT</div>
+          <h1 class="gov-masthead-title">NATIONAL HIGHWAYS CEO — TAPAL CHASE</h1>
+          <div class="gov-masthead-subtitle">Integrated Government Letter, Inward Tapal & Grievance Tracking Portal</div>
+        </div>
+      </div>
+
+      <div class="gov-masthead-right">
+        <!-- Admin Global Date Lock / Release Toggle -->
+        <div id="admin-date-lock-container" class="gov-action-pill">
+          <span id="date-lock-status-badge" style="font-size: 11px; font-weight: 800; color: #ef4444; display: flex; align-items: center; gap: 4px;">
+            <i class="ri-lock-2-line" id="icon-date-lock"></i> <span id="text-date-lock">Date Locked</span>
+          </span>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-date-lock" onclick="toggleAdminDateLock()" title="Toggle Global Date Lock">
+            Release Dates
+          </button>
+        </div>
+
+        <!-- Logged In Official User Profile Badge & Logout Button -->
+        <div class="gov-user-pill">
+          <i class="ri-user-star-line" style="color: var(--gov-gold); font-size: 16px;"></i>
+          <span id="logged-user-display">Executive Admin</span>
+          <button class="btn btn-secondary btn-sm gov-logout-btn" id="btn-logout" title="Logout">
+            <i class="ri-logout-box-r-line"></i> Logout
+          </button>
+        </div>
+
+        <button class="btn btn-secondary btn-sm gov-btn-export" id="btn-export-csv">
+          <i class="ri-download-cloud-line"></i> Export Data
+        </button>
+        <button class="btn btn-primary gov-btn-register" id="btn-open-register-modal">
+          <i class="ri-add-line"></i> Register Tapal
+        </button>
+      </div>
+    </header>
+
+    <!-- National Tricolor Accent Strip -->
+    <div class="gov-tricolor-strip"></div>
+
+    <!-- Main Navigation Bar -->
+    <nav class="gov-portal-nav">
+      <div class="gov-nav-container">
+        <a class="nav-item active" data-tab="dashboard-pane">
+          <i class="ri-dashboard-3-line"></i>
+          <span>Executive Dashboard</span>
+        </a>
+        <a class="nav-item" data-tab="register-pane">
+          <i class="ri-folder-open-line"></i>
+          <span>Inward Tapal Register</span>
+        </a>
+        <a class="nav-item" data-tab="followup-pane" id="nav-followup-tab">
+          <i class="ri-notification-3-line"></i>
+          <span>Follow Up Cases</span>
+          <span class="badge" id="followup-alert-count" style="display: none;">0</span>
+        </a>
+        <a class="nav-item" data-tab="inbox-pane" id="nav-inbox-tab">
+          <i class="ri-inbox-unarchive-line"></i>
+          <span>Admin Inbox</span>
+          <span class="badge" id="inbox-unread-count" style="display: none;">0</span>
+        </a>
+        <a class="nav-item" data-tab="pipeline-pane">
+          <i class="ri-git-merge-line"></i>
+          <span>Role Workflow Pipeline</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Breadcrumb & Context Bar -->
+    <div class="gov-breadcrumb-bar">
+      <div class="gov-breadcrumb-left">
+        <button class="btn btn-secondary btn-sm gov-sidebar-toggle-btn" id="btn-toggle-sidebar" title="Toggle Navigation Sidebar">
+          <i class="ri-menu-fold-line" id="icon-toggle-sidebar"></i>
+        </button>
+        <nav aria-label="Breadcrumb" class="gov-breadcrumb">
+          <i class="ri-home-4-line"></i>
+          <span>Home</span>
+          <i class="ri-arrow-right-s-line"></i>
+          <span id="breadcrumb-active-title">Executive Dashboard</span>
+        </nav>
+      </div>
+      <div class="gov-page-meta">
+        <h2 id="page-title" style="margin: 0; font-size: 15px; font-weight: 800;">Executive Dashboard</h2>
+        <p id="page-subtitle" style="margin: 0; font-size: 11px; color: var(--text-muted);">Real-time tracking of incoming mail, officers, and stage turnaround performance</p>
+      </div>
+    </div>
+
+    <div class="gov-app-body-layout">
+      <!-- Sidebar Navigation (Collapsible / Secondary) -->
+      <aside class="sidebar">
+        <div class="brand-header">
+          <div class="brand-logo">
+            <i class="ri-government-line"></i>
+          </div>
+          <div class="brand-title">
+            <h1>TAPAL CHASE</h1>
+            <p>National Highways CEO</p>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <div class="nav-section-title">Department Navigation</div>
+          <a class="nav-item active" data-tab="dashboard-pane">
+            <i class="ri-dashboard-3-line"></i>
+            <span>Executive Dashboard</span>
+          </a>
+          <a class="nav-item" data-tab="register-pane">
+            <i class="ri-folder-open-line"></i>
+            <span>Inward Tapal Register</span>
+          </a>
+          <a class="nav-item" data-tab="followup-pane" id="sidebar-followup-tab">
+            <i class="ri-notification-3-line"></i>
+            <span>Follow Up Cases</span>
+          </a>
+          <a class="nav-item" data-tab="inbox-pane" id="sidebar-inbox-tab">
+            <i class="ri-inbox-unarchive-line"></i>
+            <span>Admin Inbox</span>
+          </a>
+          <a class="nav-item" data-tab="pipeline-pane">
+            <i class="ri-git-merge-line"></i>
+            <span>Role Workflow Pipeline</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="office-tag">
+            <div class="office-dot"></div>
+            <div>
+              <div style="font-weight: 700; color: var(--text-main);" id="sidebar-wing-title">PLANNING / BUDGET</div>
+              <div style="font-size: 10.5px; color: var(--text-muted);">Chief Engineer Office, Chennai</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Wrapper -->
+      <div class="main-wrapper">
+
+      <!-- Main Content Area -->
+      <main class="content-area">
+
+        <!-- PANE 1: EXECUTIVE DASHBOARD (MATCHING AUTHENTIC EXCEL MONITORING DASHBOARD) -->
+        <section id="dashboard-pane" class="tab-pane active">
+          <!-- Official Government Monitoring Banner -->
+          <div class="excel-dashboard-banner gov-dashboard-banner">
+            <div class="gov-banner-left">
+              <div class="gov-banner-seal">
+                <i class="ri-bar-chart-2-fill"></i>
+              </div>
+              <div>
+                <div class="gov-banner-dept">GOVERNMENT OF TAMIL NADU • HIGHWAYS DEPARTMENT</div>
+                <h3 class="gov-banner-title">NATIONAL HIGHWAYS — CHIEF ENGINEER OFFICE</h3>
+                <p class="gov-banner-subtitle">Executive Tapal Review, Turnaround SLA & Monitoring Dashboard</p>
+              </div>
+            </div>
+
+            <!-- SECTION DROPDOWN FILTER -->
+            <div class="gov-banner-filter-wrapper">
+              <label for="dashboard-section-filter" class="gov-banner-filter-label"><i class="ri-filter-3-line"></i> Filter Wing:</label>
+              <select id="dashboard-section-filter" class="form-control gov-dashboard-select">
+                <!-- Populated dynamically via JavaScript -->
+              </select>
+            </div>
+          </div>
+
+          <!-- DASHBOARD FOLLOW UP REMINDER ALERT CONTAINER (Shows 1 Day Before Alert Date or Due Today/Overdue) -->
+          <div id="dashboard-followup-alert-container" style="margin-bottom: 20px; display: none;">
+            <!-- Populated dynamically via renderDashboardFollowUpAlerts() -->
+          </div>
+
+          <!-- Top KPI Metrics Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card blue gov-kpi-card">
+              <div class="kpi-info">
+                <p>Total Received</p>
+                <div class="kpi-value" id="kpi-received">128</div>
+                <div class="kpi-subtext" id="kpi-received-subtext">Across all active months</div>
+              </div>
+              <div class="kpi-icon" onclick="filterAndNavigateToRegister({})" style="cursor: pointer;" title="Click to view all received correspondence">
+                <i class="ri-inbox-archive-line"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card green gov-kpi-card">
+              <div class="kpi-info">
+                <p>Total Action Taken</p>
+                <div class="kpi-value" id="kpi-processed">122</div>
+                <div class="kpi-subtext" id="kpi-completion-rate">Memo: 0 • Proceedings: 0 • Filed: 0</div>
+              </div>
+              <div class="kpi-icon" onclick="filterAndNavigateToRegister({ status: 'Filed' })" style="cursor: pointer;" title="Click to view processed action items">
+                <i class="ri-checkbox-circle-line"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card yellow gov-kpi-card">
+              <div class="kpi-info">
+                <p>Total Pendings</p>
+                <div class="kpi-value" id="kpi-pending">6</div>
+                <div class="kpi-subtext" id="kpi-pending-subtext">Awaiting action/reply</div>
+              </div>
+              <div class="kpi-icon" onclick="filterAndNavigateToRegister({ status: 'Pending' })" style="cursor: pointer;" title="Click to view all pending items">
+                <i class="ri-time-line"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card purple gov-kpi-card">
+              <div class="kpi-info">
+                <p>Avg Turnaround</p>
+                <div class="kpi-value" id="kpi-avg-turnaround">4.2 Days</div>
+                <div class="kpi-subtext">Receipt to File Approval</div>
+              </div>
+              <div class="kpi-icon" title="Average turnaround duration">
+                <i class="ri-speed-up-line"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Authentic Dual Dashboard Charts Grid (Tapal Monitoring Bar & Tapal Status Doughnut) -->
+          <div class="gov-charts-grid">
+            <!-- TAPAL MONITORING BAR CHART (12 MONTHS) -->
+            <div class="chart-card gov-chart-card">
+              <div class="chart-card-header">
+                <div class="chart-card-title">
+                  <i class="ri-bar-chart-grouped-line" style="color: var(--info);"></i>
+                  <span>TAPAL MONITORING (JAN - DEC)</span>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted);">Blue: Received | Green: Action Taken | Red: Pending</span>
+              </div>
+              <div class="chart-container" style="height: 320px;">
+                <canvas id="monthlyChart"></canvas>
+              </div>
+            </div>
+
+            <!-- TAPAL STATUS DOUGHNUT CHART -->
+            <div class="chart-card gov-chart-card">
+              <div class="chart-card-header">
+                <div class="chart-card-title">
+                  <i class="ri-pie-chart-line" style="color: var(--gov-gold);"></i>
+                  <span>TAPAL STATUS</span>
+                </div>
+              </div>
+              <div class="chart-container" style="height: 320px;">
+                <canvas id="statusChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12-MONTH TAPAL MONITORING MATRIX SUMMARY TABLE -->
+          <div class="table-container-card gov-matrix-card">
+            <div class="chart-card-header" style="margin-bottom: 14px;">
+              <div class="chart-card-title">
+                <i class="ri-table-line" style="color: var(--success);"></i>
+                <span>12-MONTH TAPAL REVIEW & MONITORING MATRIX</span>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table register-table gov-ledger-table" style="font-size: 12px; text-align: center;">
+                <thead>
+                  <tr>
+                    <th style="text-align: left; padding: 10px 14px; min-width: 140px;">STATUS / METRIC</th>
+                    <th>JAN</th>
+                    <th>FEB</th>
+                    <th>MAR</th>
+                    <th>APR</th>
+                    <th>MAY</th>
+                    <th>JUN</th>
+                    <th>JUL</th>
+                    <th>AUG</th>
+                    <th>SEP</th>
+                    <th>OCT</th>
+                    <th>NOV</th>
+                    <th>DEC</th>
+                    <th class="matrix-total-header">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody id="matrix-summary-tbody">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANE 2: INWARD TAPAL REGISTER -->
+        <section id="register-pane" class="tab-pane">
+          <div class="table-container-card">
+            <!-- Authentic Excel Top Summary Bar -->
+            <div class="excel-header-banner">
+              <div class="summary-box pendings-box">
+                <span class="summary-label">Total Pendings</span>
+                <span class="summary-value" id="register-total-pendings">3</span>
+              </div>
+              <div class="summary-box letter-whom-box">
+                <span class="summary-label">Letter from Whom</span>
+                <select id="filter-letter-whom" class="whom-select">
+                  <option value="ALL">All Offices / Senders</option>
+                  <option value="SE">SE</option>
+                  <option value="DE">DE</option>
+                  <option value="MORTH">MORTH</option>
+                  <option value="GOVT">GOVT</option>
+                  <option value="CE">CE</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Enhanced Interactive Calendar & Date Filter Hub (DD/MM/YYYY) -->
+            <!-- Enhanced Interactive Calendar & Date Filter Hub (DD/MM/YYYY) -->
+            <div class="manual-date-card date-filter-hub">
+
+              <!-- Row 1: Month Preset Tabs & Quick Select -->
+              <div class="date-filter-row date-filter-row-top">
+                <div class="date-filter-group-left">
+                  <span class="date-filter-label">
+                    <i class="ri-calendar-event-line"></i> Select Month:
+                  </span>
+                  <select class="form-control date-filter-select" id="quick-month-select" title="Select Month to Filter">
+                    <option value="ALL">ALL DATES (128 records)</option>
+                  </select>
+                </div>
+                <div id="date-filter-status-badge" class="date-filter-status-badge">
+                  <i class="ri-calendar-check-line"></i> <span>Showing All Active Dates</span>
+                </div>
+              </div>
+
+              <!-- Row 2: Custom Date Range & Single Date Search -->
+              <div class="date-filter-row date-filter-row-bottom">
+                <!-- Date Range Inputs -->
+                <div class="date-filter-range-group">
+                  <span class="date-filter-sublabel">
+                    <i class="ri-calendar-event-line"></i> Range (DD/MM/YYYY):
+                  </span>
+                  <div class="date-picker-input-wrapper" style="flex: 1;">
+                    <input type="text" id="reg-range-start-text" class="custom-date-text-input" placeholder="DD/MM/YYYY">
+                    <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                    <input type="date" id="reg-range-start-picker" class="custom-native-date-picker">
+                  </div>
+                  <span class="date-filter-separator">to</span>
+                  <div class="date-picker-input-wrapper" style="flex: 1;">
+                    <input type="text" id="reg-range-end-text" class="custom-date-text-input" placeholder="DD/MM/YYYY">
+                    <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                    <input type="date" id="reg-range-end-picker" class="custom-native-date-picker">
+                  </div>
+                  <button class="btn btn-primary btn-sm" id="btn-reg-filter-range" style="font-weight: 700; white-space: nowrap;"><i class="ri-filter-line"></i> Filter Range</button>
+                  <span id="range-file-count-badge" class="range-count-badge" style="display: none;" title="Files found within selected date range">
+                    <i class="ri-file-list-3-line"></i> <span id="range-count-text">0 files</span>
+                  </span>
+                </div>
+
+                <!-- Single Date Search -->
+                <div class="date-filter-single-group">
+                  <div class="date-picker-input-wrapper" style="flex: 1;">
+                    <input type="text" id="reg-single-date-text" class="custom-date-text-input" placeholder="DD/MM/YYYY">
+                    <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                    <input type="date" id="reg-single-date-picker" class="custom-native-date-picker">
+                  </div>
+                  <button class="btn btn-secondary btn-sm" id="btn-reg-search-date" style="white-space: nowrap;"><i class="ri-search-line"></i> Search</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-reg-reset-date" style="white-space: nowrap; color: #f87171;"><i class="ri-refresh-line"></i> Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-toolbar register-table-toolbar">
+              <!-- File Reference No Dedicated Search Bar -->
+              <div class="file-ref-search-box">
+                <i class="ri-file-search-line"></i>
+                <input type="text" id="file-ref-search-input" class="form-control" 
+                  placeholder="Search File Ref No (e.g. 2121/SA1)...">
+                <button type="button" id="btn-clear-file-ref-search" class="btn-clear-search" title="Clear Search">&times;</button>
+              </div>
+
+              <div class="filter-group" style="display: flex; align-items: center; gap: 10px;">
+                <!-- Fullscreen View Toggle & Excel Direct Export & Import Action Buttons -->
+                <button class="btn btn-secondary btn-sm" id="btn-toggle-fullscreen-table"
+                  style="display: flex; align-items: center; gap: 6px; font-weight: 700;"
+                  title="Toggle Full Screen Register Table Width">
+                  <i class="ri-fullscreen-line" id="icon-fullscreen-table"></i> Fullscreen Table
+                </button>
+                <button class="btn btn-success btn-sm" id="btn-export-excel"
+                  style="display: flex; align-items: center; gap: 6px; font-weight: 700;"
+                  title="Export Multi-Sheet .xlsx Workbook">
+                  <i class="ri-file-excel-line"></i> Export XLSX
+                </button>
+                <label class="btn btn-primary btn-sm"
+                  style="display: flex; align-items: center; gap: 6px; font-weight: 700; cursor: pointer; margin: 0;"
+                  title="Import .xlsx Workbook">
+                  <i class="ri-upload-2-line"></i> Import XLSX
+                  <input type="file" id="input-import-excel" accept=".xlsx, .xls" style="display: none;">
+                </label>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table register-table" id="tapal-table">
+                <thead>
+                  <tr>
+                    <th>S.No.</th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-type" title="Filter Tapal / Mail">
+                        <option value="ALL">Tapal / mail ▾</option>
+                        <option value="Tapal">Tapal</option>
+                        <option value="Email">Email</option>
+                        <option value="DO-Letter">DO-Letter</option>
+                        <option value="Confidential">Confidential</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>Current number</th>
+                    <th>Office seal Date</th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-section"
+                        onchange="updateEmpDesigFilterDropdown(); currentPage = 1; renderRegisterTable();">
+                        <option value="ALL">SECTION ▾</option>
+                        <option value="ACCT">ACCT (Accounts)</option>
+                        <option value="DB">DB (Drawing Branch)</option>
+                        <option value="ESTT">ESTT (Establishment)</option>
+                        <option value="R&B">R&B (Roads & Bridges)</option>
+                        <option value="PLG">PLG (Planning)</option>
+                        <option value="CRIF">CRIF (Budget & CRIF)</option>
+                        <option value="CONT">CONT (Contract)</option>
+                        <option value="CMGT">CMGT (Contract Management)</option>
+                        <option value="RSQC">RSQC (Road Safety & QC)</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-emp-desig"
+                        onchange="currentPage = 1; renderRegisterTable();">
+                        <option value="ALL">EMPLOYEE DESIGNATION ▾</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th id="th-col-rec-sec-date" style="cursor: pointer; user-select: none; white-space: nowrap;" onclick="toggleSortSectionDate()" title="Click to sort by Section Receipt Date">
+                      Section Receipt Date (Date Received in Section) <span id="sort-icon-rec-sec" style="color: #38bdf8; font-size: 11px;">⇅</span>
+                    </th>
+                    <th>Subject</th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-letter-ref" title="Filter Letter ref.">
+                        <option value="ALL">Letter ref. ▾</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>Dated</th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-short-sub" title="Filter SUBJECT IN BRIEF">
+                        <option value="ALL">SUBJECT IN BRIEF ▾</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-office" title="Filter Main Office">
+                        <option value="ALL">Main office ▾</option>
+                        <option value="GOVT">GOVT</option>
+                        <option value="MORTH">MORTH</option>
+                        <option value="SE">SE</option>
+                        <option value="DE">DE</option>
+                        <option value="CE">CE</option>
+                        <option value="AG">AG</option>
+                        <option value="NHAI">NHAI</option>
+                        <option value="Others">Others</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-officer" title="Filter Officer Designation">
+                        <option value="ALL">Officer Designation ▾</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>
+                      <select class="th-dropdown-select" id="th-filter-status" title="Filter Status">
+                        <option value="ALL">Status ▾</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Memo">Memo</option>
+                        <option value="Letter">Letter</option>
+                        <option value="Proceedings">Proceedings</option>
+                        <option value="DO Letter">DO Letter</option>
+                        <option value="Office Order">Office Order</option>
+                        <option value="Others">Others</option>
+                        <option value="Filed">Filed</option>
+                        <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                        <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                      </select>
+                    </th>
+                    <th>Action initiated</th>
+                    <th>File No. Ref</th>
+                    <th>File Initiated Date</th>
+                    <th>File Approval / Fair copy sent Date</th>
+                    <th>Follow up cases</th>
+                    <th>Alert date</th>
+                    <th>Follow up case closed Date</th>
+                    <th>Remarks</th>
+                    <th id="th-dispatch-col-header">Office letter number / Accounts Ref</th>
+                    <th>Dispatch Date</th>
+                    <th>Sent To</th>
+                    <th onclick="toggleSortReminders()" style="cursor: pointer; white-space: nowrap; color: #fbbf24;" id="th-reminders-col" title="Click to sort by Reminders Count">Reminders <i class="ri-arrow-up-down-line" style="font-size: 11px;"></i></th>
+                    <th onclick="toggleSortLatestReminderDate()" style="cursor: pointer; white-space: nowrap; color: #38bdf8;" id="th-latest-reminder-col" title="Click to sort by Latest Reminder Date">Latest Reminder Date <i class="ri-arrow-up-down-line" style="font-size: 11px;"></i></th>
+                    <th>Complaint / Issue</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tapal-tbody">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination">
+              <span id="pagination-info">Showing 1-15 of 128 entries</span>
+              <div class="pagination-btns">
+                <button class="btn btn-secondary btn-sm" id="btn-prev-page"><i class="ri-arrow-left-s-line"></i>
+                  Prev</button>
+                <button class="btn btn-secondary btn-sm" id="btn-next-page">Next <i
+                    class="ri-arrow-right-s-line"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANE 3: AI OCR SCANNER -->
+
+        <!-- PANE 4: WORKFLOW PIPELINE (KANBAN) -->
+        <section id="pipeline-pane" class="tab-pane">
+          <div class="chart-card-header" style="margin-bottom: 20px;">
+            <div class="chart-card-title">
+              <i class="ri-git-commit-line" style="color: var(--primary);"></i>
+              <span>Role-Based Workflow Pipeline (Real-Time Stage Management)</span>
+            </div>
+          </div>
+
+          <div class="kanban-board">
+            <div class="kanban-col">
+              <div class="kanban-header">
+                <span>1. Inward Clerk</span>
+                <span class="badge badge-letter" id="cnt-inward">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-inward"></div>
+            </div>
+
+            <div class="kanban-col">
+              <div class="kanban-header">
+                <span>2. Superintendent</span>
+                <span class="badge badge-memo" id="cnt-super">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-super"></div>
+            </div>
+
+            <div class="kanban-col">
+              <div class="kanban-header">
+                <span>3. Officer Review</span>
+                <span class="badge badge-pending" id="cnt-officer">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-officer"></div>
+            </div>
+
+            <div class="kanban-col">
+              <div class="kanban-header">
+                <span>4. Reply & Dispatch</span>
+                <span class="badge badge-proceeding" id="cnt-dispatch">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-dispatch"></div>
+            </div>
+
+            <div class="kanban-col">
+              <div class="kanban-header">
+                <span>5. Closed / Filed</span>
+                <span class="badge badge-filed" id="cnt-closed">0</span>
+              </div>
+              <div class="kanban-cards" id="kanban-closed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANE 5: ADMIN INBOX (COMPLAINTS & ISSUES) -->
+        <section id="inbox-pane" class="tab-pane">
+          <!-- Admin Inbox Official Banner Header -->
+          <div class="gov-dashboard-banner" style="margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="gov-crest-icon">
+                <i class="ri-inbox-unarchive-line"></i>
+              </div>
+              <div>
+                <h3>ADMIN INBOX & GRIEVANCE RESOLUTION CENTER</h3>
+                <p>OFFICIAL GRIEVANCE REDRESSAL & DISPUTE RESOLUTION DESK • MONITOR, ESCALATE & RESOLVE</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="btn btn-secondary btn-sm" onclick="exportComplaintsCSV()" style="font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                <i class="ri-download-2-line"></i> Export Issues CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Top KPI Metrics Cards -->
+          <div class="kpi-grid" style="margin-bottom: 22px;">
+            <div class="kpi-card blue gov-kpi-card">
+              <div class="kpi-info">
+                <p>Total Complaints</p>
+                <div class="kpi-value" id="inbox-kpi-total">0</div>
+                <div class="kpi-subtext">All raised issues & grievances</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-inbox-archive-line"></i></div>
+            </div>
+
+            <div class="kpi-card red gov-kpi-card">
+              <div class="kpi-info">
+                <p>Pending / Open</p>
+                <div class="kpi-value" id="inbox-kpi-pending" style="color: var(--gov-maroon);">0</div>
+                <div class="kpi-subtext">Requires urgent admin action</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-error-warning-line"></i></div>
+            </div>
+
+            <div class="kpi-card yellow gov-kpi-card">
+              <div class="kpi-info">
+                <p>Under Review</p>
+                <div class="kpi-value" id="inbox-kpi-review" style="color: var(--gov-gold-dark);">0</div>
+                <div class="kpi-subtext">Investigation in progress</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-search-eye-line"></i></div>
+            </div>
+
+            <div class="kpi-card green gov-kpi-card">
+              <div class="kpi-info">
+                <p>Resolved / Closed</p>
+                <div class="kpi-value" id="inbox-kpi-resolved" style="color: var(--success);">0</div>
+                <div class="kpi-subtext">Successfully addressed & filed</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-checkbox-circle-line"></i></div>
+            </div>
+          </div>
+
+          <!-- Inbox Table Card -->
+          <div class="chart-card" style="padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-top: 3px solid var(--gov-navy); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="ri-list-check-2" style="font-size: 20px; color: var(--gov-navy-light);"></i>
+                <h4 style="font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: var(--text-heading); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Grievance & Issue Docket Log</h4>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div style="position: relative; width: 320px;">
+                  <i class="ri-search-line" style="position: absolute; left: 12px; top: 10px; color: var(--text-muted); font-size: 14px;"></i>
+                  <input type="text" id="inbox-search-input" class="form-control" placeholder="Search Issue ID, Inward No, Subject, User..." style="padding-left: 34px; height: 36px; font-size: 12.5px; width: 100%;">
+                </div>
+
+                <select class="form-control" id="inbox-filter-status" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 0 12px; cursor: pointer;">
+                  <option value="ALL">All Statuses ▾</option>
+                  <option value="Pending">⏳ Pending / Open</option>
+                  <option value="Under Review">🔍 Under Review</option>
+                  <option value="Resolved">✅ Resolved</option>
+                </select>
+
+                <select class="form-control" id="inbox-filter-priority" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 0 12px; cursor: pointer;">
+                  <option value="ALL">All Priorities ▾</option>
+                  <option value="Urgent">🚨 Urgent / Critical</option>
+                  <option value="High">🟠 High Priority</option>
+                  <option value="Medium">🟡 Medium Priority</option>
+                  <option value="Low">🟢 Low Priority</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Complaints Table with Government Ledger Styling -->
+            <div class="table-responsive" style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <table class="inbox-custom-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th>Issue ID</th>
+                    <th>Inward No</th>
+                    <th>Tapal Subject</th>
+                    <th>Category</th>
+                    <th style="text-align: center;">Priority</th>
+                    <th>Problem Description</th>
+                    <th>Raised By & Date</th>
+                    <th style="text-align: center;">Admin Status</th>
+                    <th style="text-align: center;">Admin Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inbox-tbody">
+                  <!-- Dynamically populated via renderAdminInbox() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANE 5: FOLLOW UP CASES & REMINDER ALERTS -->
+        <section id="followup-pane" class="tab-pane">
+          <!-- Follow Up Banner Header -->
+          <div class="gov-dashboard-banner" style="margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="gov-crest-icon">
+                <i class="ri-notification-3-line"></i>
+              </div>
+              <div>
+                <h3>FOLLOW UP CASES & REMINDER ALERTS</h3>
+                <p>OFFICIAL TIMED ALERTS, REMINDERS & SLA CLOSURE MONITORING DESK</p>
+              </div>
+            </div>
+
+            <!-- Quick Filter & Actions -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="btn btn-secondary btn-sm" onclick="exportFollowUpCSV()" style="font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                <i class="ri-file-excel-2-line"></i> Export Follow Ups (.CSV)
+              </button>
+            </div>
+          </div>
+
+          <!-- Follow Up KPI Metric Cards -->
+          <div class="kpi-grid" style="margin-bottom: 22px;">
+            <div class="kpi-card blue gov-kpi-card">
+              <div class="kpi-info">
+                <p>Total Follow Ups</p>
+                <div class="kpi-value" id="fu-kpi-total">0</div>
+                <div class="kpi-subtext">All registered follow up cases</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-list-check"></i></div>
+            </div>
+
+            <div class="kpi-card yellow gov-kpi-card">
+              <div class="kpi-info">
+                <p>Due Tomorrow</p>
+                <div class="kpi-value" id="fu-kpi-tomorrow" style="color: var(--gov-gold-dark);">0</div>
+                <div class="kpi-subtext">1-Day Alert Notification</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-alarm-warning-line"></i></div>
+            </div>
+
+            <div class="kpi-card red gov-kpi-card">
+              <div class="kpi-info">
+                <p>Due Today / Overdue</p>
+                <div class="kpi-value" id="fu-kpi-overdue" style="color: var(--gov-maroon);">0</div>
+                <div class="kpi-subtext">Requires immediate action</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-error-warning-fill"></i></div>
+            </div>
+
+            <div class="kpi-card green gov-kpi-card">
+              <div class="kpi-info">
+                <p>Closed / Resolved</p>
+                <div class="kpi-value" id="fu-kpi-closed" style="color: var(--success);">0</div>
+                <div class="kpi-subtext">Alert closed & date recorded</div>
+              </div>
+              <div class="kpi-icon"><i class="ri-checkbox-circle-line"></i></div>
+            </div>
+          </div>
+
+          <!-- Follow Up Table Card -->
+          <div class="chart-card" style="padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-top: 3px solid var(--gov-gold); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="ri-time-line" style="font-size: 20px; color: var(--gov-gold);"></i>
+                <h4 style="font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: var(--text-heading); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Follow Up Register & Alert Timeline</h4>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div style="position: relative; width: 320px;">
+                  <i class="ri-search-line" style="position: absolute; left: 12px; top: 10px; color: var(--text-muted); font-size: 14px;"></i>
+                  <input type="text" id="fu-search-input" class="form-control" placeholder="Search Inward No, Subject, Follow Up..." style="padding-left: 34px; height: 36px; font-size: 12.5px; width: 100%;">
+                </div>
+
+                <select class="form-control" id="fu-filter-status" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 0 12px; cursor: pointer;">
+                  <option value="ALL">All Alerts ▾</option>
+                  <option value="DUE_TOMORROW">🟡 Due Tomorrow (1-Day Reminder)</option>
+                  <option value="OVERDUE_TODAY">🔴 Due Today / Overdue</option>
+                  <option value="UPCOMING">🔵 Upcoming</option>
+                  <option value="CLOSED">🟢 Closed / Resolved</option>
+                </select>
+
+                <select class="form-control" id="fu-filter-section" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 0 12px; cursor: pointer;">
+                  <option value="ALL">All Sections ▾</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive" style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <table class="inbox-custom-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th>Inward No</th>
+                    <th>Section & Officer</th>
+                    <th>Tapal Subject</th>
+                    <th>Follow Up Case Details</th>
+                    <th style="text-align: center;">Alert Date</th>
+                    <th style="text-align: center;">Alert Status</th>
+                    <th style="text-align: center;">Follow Up Case Closed Date</th>
+                    <th style="text-align: center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="followup-tbody">
+                  <!-- Dynamically populated via renderFollowUpModule() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- OFFICIAL GOVERNMENT PORTAL FOOTER -->
+      <footer class="gov-portal-footer" id="portal-footer">
+        <div class="gov-footer-tricolor"></div>
+        <div class="gov-footer-main">
+          <!-- Col 1: Brand & Office -->
+          <div>
+            <div class="gov-footer-brand">
+              <div class="gov-footer-emblem-seal">
+                <i class="ri-government-fill"></i>
+              </div>
+              <div>
+                <div class="gov-footer-brand-title">TAPAL CHASE</div>
+                <div class="gov-footer-brand-dept">HIGHWAYS DEPARTMENT • GOVERNMENT OF TAMIL NADU</div>
+                <div class="gov-footer-brand-sub">Office of the Chief Engineer, National Highways Wing<br>Integrated Inward & Outward Tapal Tracking System</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: Useful Links -->
+          <div>
+            <div class="gov-footer-col-title">
+              <i class="ri-links-line"></i> Important Policies & Links
+            </div>
+            <ul class="gov-footer-links">
+              <li class="gov-footer-link-item"><a href="javascript:void(0)"><i class="ri-arrow-right-s-line"></i> Right to Information (RTI Act)</a></li>
+              <li class="gov-footer-link-item"><a href="javascript:void(0)"><i class="ri-arrow-right-s-line"></i> Terms of Use & Disclaimers</a></li>
+              <li class="gov-footer-link-item"><a href="javascript:void(0)"><i class="ri-arrow-right-s-line"></i> Privacy Policy & Data Security</a></li>
+              <li class="gov-footer-link-item"><a href="javascript:void(0)"><i class="ri-arrow-right-s-line"></i> Hyperlinking & Copyright Policy</a></li>
+              <li class="gov-footer-link-item"><a href="javascript:void(0)"><i class="ri-arrow-right-s-line"></i> Helpdesk & User Operational Manual</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Portal Metadata & Accessibility -->
+          <div>
+            <div class="gov-footer-col-title">
+              <i class="ri-information-line"></i> System & Compliance
+            </div>
+            <div class="gov-footer-meta-item">
+              <i class="ri-git-branch-line" style="color: var(--gov-gold-light);"></i>
+              <span>Portal Version: <strong>v2.4.0 (GovTN Secure Edition)</strong></span>
+            </div>
+            <div class="gov-footer-meta-item">
+              <i class="ri-calendar-check-line" style="color: var(--gov-gold-light);"></i>
+              <span>Last Content Update: <strong>27 August 2026</strong></span>
+            </div>
+            <div class="gov-footer-meta-item">
+              <i class="ri-user-follow-line" style="color: var(--gov-gold-light);"></i>
+              <span>Total Portal Accesses: <strong>1,482,904</strong></span>
+            </div>
+            <div class="gov-footer-badge">
+              <i class="ri-shield-check-fill"></i> Compliant with GIGW 3.0 & W3C WAI-AA
+            </div>
+          </div>
+        </div>
+
+        <div class="gov-footer-bottom">
+          <p>© 2026 Highways Department, Government of Tamil Nadu. All Rights Reserved. Hosted & Maintained in accordance with Tamil Nadu e-Governance Standards.</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTER NEW TAPAL -->
+  <div class="modal-overlay" id="register-modal">
+    <div class="modal-box" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><i class="ri-add-circle-line" style="color: var(--primary);"></i> Register New Tapal</h3>
+        <button class="close-btn" id="btn-close-register-modal">&times;</button>
+      </div>
+
+      <!-- Progressive Header Navigation Tabs -->
+      <div class="modal-stepper-header">
+        <div class="modal-step-tab active" id="reg-step-tab-1" onclick="onRegisterTabClick(1)">
+          <i class="ri-inbox-archive-line"></i> <span>Inward Receipt</span>
+        </div>
+        <div class="modal-step-tab" id="reg-step-tab-2" onclick="onRegisterTabClick(2)">
+          <i class="ri-file-list-3-line"></i> <span>Letter & Action</span>
+        </div>
+        <div class="modal-step-tab" id="reg-step-tab-3" onclick="onRegisterTabClick(3)">
+          <i class="ri-send-plane-fill"></i> <span>Dispatch Details</span>
+        </div>
+      </div>
+
+      <form id="tapal-form">
+        <!-- STEP 1: INWARD RECEIPT -->
+        <div class="modal-step-pane active" id="reg-step-pane-1">
+          <div class="step-card-box" style="border-left: 3px solid #38bdf8;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tapal / Mail Type <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-tapal-type" required>
+                  <option value="Tapal">Tapal</option>
+                  <option value="Email">Email</option>
+                  <option value="DO-Letter">DO-Letter</option>
+                  <option value="Confidential">Confidential</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Current Number (Inward No) <span style="color: #ef4444;">*</span></label>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" class="form-control" id="form-curr-no" placeholder="e.g. 0888 or 1520" required>
+              </div>
+
+              <div class="form-group">
+                <label>Office Seal Date <span style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-seal-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-seal-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Received in Section Date (TAPAL) <span style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-rec-sec-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-rec-sec-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Section <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-tech-sec-ref" required>
+                  <option value="">-- Select Section --</option>
+                  <option value="ACCT">ACCT (Accounts)</option>
+                  <option value="DB">DB (Drawing Branch)</option>
+                  <option value="ESTT">ESTT (Establishment)</option>
+                  <option value="R&B">R&B (Roads & Bridges)</option>
+                  <option value="PLG">PLG (Planning)</option>
+                  <option value="CRIF">CRIF (Budget & CRIF)</option>
+                  <option value="CONT">CONT (Contract)</option>
+                  <option value="CMGT">CMGT (Contract Management)</option>
+                  <option value="RSQC">RSQC (Road Safety & QC)</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-step-next" onclick="proceedRegisterStep(1, 2)">
+                Next: Letter & Action <i class="ri-arrow-right-line"></i>
+              </button>
+              <button type="button" class="btn btn-footer-save" onclick="manualSaveDraft('register', 1)">
+                <i class="ri-save-line"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: LETTER & ACTION DETAILS -->
+        <div class="modal-step-pane" id="reg-step-pane-2">
+          <div class="step-card-box" style="border-left: 3px solid #fbbf24;">
+
+            <!-- TOP HEADER ROW: SELECTED SECTION & EMPLOYEE DESIGNATION -->
+            <div class="modal-step-info-card">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="color: var(--gov-navy-light); font-weight: 800; font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;"><i class="ri-building-line" style="margin-right: 4px;"></i> Selected Section (from Inward Receipt)</label>
+                <div id="form-selected-section-display" class="form-control" style="font-weight: 700; font-size: 13.5px; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                  <i class="ri-checkbox-circle-fill" style="color: var(--success);"></i>
+                  <span id="form-selected-section-text">-- Not Selected in Step 1 --</span>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="color: #fbbf24; font-weight: 800; font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;"><i class="ri-user-star-line" style="margin-right: 4px;"></i> Employee Designation <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-emp-desig" style="border-color: rgba(251, 191, 36, 0.4); font-weight: 600;" required>
+                  <option value="">-- Select Section First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Subject <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="form-subject" placeholder="Enter detailed subject of letter" required>
+              </div>
+
+              <div class="form-group">
+                <label>Letter Reference No <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="form-letter-ref" placeholder="e.g. 193/2023/B2" required>
+              </div>
+
+              <div class="form-group">
+                <label>Mail/Letter Date <span style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-letter-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-letter-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Main Office <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-main-office" required>
+                  <option value="">-- Select Main Office --</option>
+                  <option value="GOVT">GOVT</option>
+                  <option value="MORTH">MORTH</option>
+                  <option value="SE">SE</option>
+                  <option value="DE">DE</option>
+                  <option value="CE">CE</option>
+                  <option value="AG">AG</option>
+                  <option value="NHAI">NHAI</option>
+                  <option value="Others">Others</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Officer Designation <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-officer" required>
+                  <option value="">-- Select Main Office First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>SUBJECT IN BRIEF <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="form-short-sub" required>
+                  <option value="">-- Select Section First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Status</label>
+                <select class="form-control" id="form-status">
+                  <option value="Pending">Pending</option>
+                  <option value="Memo">Memo</option>
+                  <option value="Letter">Letter</option>
+                  <option value="Proceedings">Proceedings</option>
+                  <option value="DO Letter">DO Letter</option>
+                  <option value="Office Order">Office Order</option>
+                  <option value="Others">Others</option>
+                  <option value="Filed">Filed</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Action Initiated</label>
+                <input type="text" class="form-control" id="form-action-initiated" placeholder="e.g. Memo to..., Letter to...">
+              </div>
+
+              <div class="form-group">
+                <label id="label-form-action-init-date">Action Initiated Date <span id="form-action-init-star" style="color: #ef4444; display: none;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-action-init-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-action-init-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label id="label-form-appr-fc-date">Approval/FC Date <span id="form-appr-fc-star" style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-appr-fc-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-appr-fc-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>File Reference No <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="form-file-no" placeholder="e.g. 2121/SA1/NH/2023" required>
+              </div>
+
+              <div class="form-group">
+                <label>Follow Up Cases</label>
+                <input type="text" class="form-control" id="form-follow-up" placeholder="e.g. Pending reply, Urgent">
+              </div>
+
+              <div class="form-group">
+                <label>Alert Date</label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-follow-up-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-follow-up-date">
+                </div>
+              </div>
+
+              <div class="form-group" style="grid-column: span 2;">
+                <label>Remarks</label>
+                <input type="text" class="form-control" id="form-remarks" placeholder="Optional remarks">
+              </div>
+
+              <!-- REMINDER HISTORY (Brand-new tapal: present for layout consistency, disabled until record is first saved) -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label style="color: #94a3b8; font-weight: 700; font-size: 12px;"><i class="ri-history-line"></i> Reminder History</label>
+                <div class="form-control" style="background: rgba(15,23,42,0.6); border: 1px dashed rgba(255,255,255,0.15); color: #64748b; font-size: 13px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: not-allowed;" title="Reminder history is available after the record is first saved.">
+                  <span><i class="ri-information-line" style="margin-right: 4px;"></i> No reminder history (Brand-new entry — Available after saving)</span>
+                  <span class="badge" style="background: rgba(148,163,184,0.1); color: #94a3b8; font-size: 11px; font-weight: 700;">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" onclick="goToRegisterStep(1)">
+              <i class="ri-arrow-left-line"></i> Back to Inward
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-step-next" id="btn-reg-step2-next" onclick="proceedRegisterStep(2, 3)">
+                Next: Dispatch Details <i class="ri-arrow-right-line"></i>
+              </button>
+              <button type="button" class="btn btn-footer-save" onclick="manualSaveDraft('register', 2)">
+                <i class="ri-save-line"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: DISPATCH & OUTWARD DETAILS -->
+        <div class="modal-step-pane" id="reg-step-pane-3">
+          <div class="step-card-box" style="border-left: 3px solid #34d399;">
+
+            <!-- LINKED TAPAL DETAILS BADGE SUMMARY -->
+            <div class="modal-step-badge-summary">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;"><i class="ri-hashtag"></i> Current Number:</span>
+                <span class="badge" id="form-dispatch-curr-no-badge" style="font-weight: 800; font-size: 12px; padding: 3px 8px; border-radius: 6px;">--</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;"><i class="ri-file-text-line"></i> File Ref No:</span>
+                <span class="badge" id="form-dispatch-fileno-badge" style="font-weight: 800; font-size: 12px; padding: 3px 8px; border-radius: 6px;">--</span>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Office letter number <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="form-sent-letter-no" placeholder="e.g. Lr.No. 101/2024/B2" required>
+              </div>
+
+              <!-- Dedicated Accounts Section Voucher / Bill Ref No -->
+              <div class="form-group" id="form-accounts-ref-group" style="display: none;">
+                <label style="color: #fbbf24; font-weight: 700;"><i class="ri-money-dollar-box-line"></i> Accounts Voucher / Bill Ref No</label>
+                <input type="text" class="form-control" id="form-accounts-ref-no" placeholder="e.g. BILL-9821/2024" style="border-color: rgba(251,191,36,0.4);">
+              </div>
+
+              <div class="form-group">
+                <label>Dispatch Date <span style="color: #ef4444;">*</span> <span style="font-size: 11px; color: #38bdf8; font-weight: 600;">(Today Only)</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="form-dispatch-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="form-dispatch-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Sent To</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" class="form-control" id="form-sent-to-input" placeholder="e.g. Executive Engineer..." style="flex: 1;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-add-sent-to-tag" style="padding: 0 10px; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);"><i class="ri-add-line"></i> Add</button>
+                </div>
+                <div id="form-sent-to-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 32px; padding: 4px 8px; background: rgba(15,23,42,0.6); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 8px; align-items: center;">
+                  <!-- Dynamic recipient tags rendered here -->
+                </div>
+                <input type="hidden" id="form-sent-to" value="">
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" onclick="goToRegisterStep(2)">
+              <i class="ri-arrow-left-line"></i> Back to Letter & Action
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-footer-save">
+                <i class="ri-checkbox-circle-fill"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CLEAN MANUAL DATE FILTER POP-UP -->
+  <div class="modal-overlay" id="calendar-modal">
+    <div class="modal-box calendar-modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-filter-3-line"></i> Filter by Date Range
+        </h3>
+        <button class="close-btn" id="btn-close-calendar-modal">&times;</button>
+      </div>
+
+      <div class="calendar-modal-body" style="padding: 0 20px 20px;">
+        <!-- MANUAL DATE RANGE SELECTION WITH CALENDAR PICKER & DD/MM/YYYY -->
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 12px;">Manual Date Range Selection</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">From Date:</label>
+              <div class="date-picker-input-wrapper">
+                <input type="text" id="cal-filter-start-text" class="custom-date-text-input" placeholder="DD/MM/YYYY" value="01/02/2023">
+                <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                <input type="date" id="cal-filter-start" class="custom-native-date-picker" value="2023-02-01">
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">To Date:</label>
+              <div class="date-picker-input-wrapper">
+                <input type="text" id="cal-filter-end-text" class="custom-date-text-input" placeholder="DD/MM/YYYY" value="28/02/2023">
+                <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                <input type="date" id="cal-filter-end" class="custom-native-date-picker" value="2023-02-28">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button class="btn btn-secondary" id="btn-clear-calendar-filter" style="flex: 1; font-weight: 700;">Clear Filter</button>
+          <button class="btn btn-primary" id="btn-apply-date-range" style="flex: 1.5;">
+            <i class="ri-check-line"></i> Apply Filter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD NEW CUSTOM OPTION DIALOG -->
+  <div class="modal-overlay" id="modal-add-custom-option" style="z-index: 1200;">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-add-circle-fill"></i> Add New Option
+        </h3>
+        <button id="btn-close-custom-modal" class="close-btn" type="button">&times;</button>
+      </div>
+
+      <form id="form-add-custom-option" novalidate style="padding: 0 20px 20px;">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label>Target Field Category</label>
+          <select class="form-control" id="custom-modal-target-field" style="width: 100%;">
+            <option value="section">Section</option>
+            <option value="empDesig">Employee Designation (per Section)</option>
+            <option value="mainOffice">Main Office / Sender</option>
+            <option value="officerDesig">Officer Designation</option>
+            <option value="shortSub">SUBJECT IN BRIEF</option>
+            <option value="letterRef">Letter Reference</option>
+            <option value="tapalType">Tapal / Mail Type</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        <!-- Section specific inputs (for adding a new section) -->
+        <div id="custom-modal-add-section-fields" style="display: none;">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>
+              <i class="ri-hashtag"></i> Section Short Code <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="text" id="custom-modal-section-code" class="form-control" placeholder="e.g. ACCT, DB, LEGAL, AUDIT" style="width: 100%; text-transform: uppercase;">
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>
+              <i class="ri-building-line"></i> Section Full Name <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="text" id="custom-modal-section-fullname" class="form-control" placeholder="e.g. Accounts, Drawing Branch, Legal Cell" style="width: 100%;">
+          </div>
+        </div>
+
+        <!-- Assign to Section group (for empDesig and shortSub) -->
+        <div class="form-group" id="custom-modal-section-group" style="margin-bottom: 16px; display: none;">
+          <label>
+            <i class="ri-git-branch-line"></i> Assign to Section / Branch <span style="color: #ef4444;">*</span>
+          </label>
+          <select class="form-control" id="custom-modal-assign-section" style="width: 100%;">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Assign to Office group (for officerDesig) -->
+        <div class="form-group" id="custom-modal-office-group" style="margin-bottom: 16px; display: none;">
+          <label>
+            <i class="ri-government-line"></i> Assign to Main Office
+          </label>
+          <select class="form-control" id="custom-modal-assign-office" style="width: 100%;">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- General Option Name Input -->
+        <div class="form-group" id="custom-modal-general-name-group" style="margin-bottom: 20px;">
+          <label id="custom-modal-option-name-label">Option Name / Title <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="custom-modal-option-name" class="form-control" placeholder="e.g. CAO, AO 1, Water Supply, Senior Auditor..." style="width: 100%;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-custom-modal">Cancel</button>
+          <button type="submit" id="btn-submit-add-custom-option" class="btn btn-primary">
+            <i class="ri-add-line"></i> Save & Add Option
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MANAGE, EDIT & DELETE DROPDOWN OPTIONS DIALOG -->
+  <div class="modal-overlay" id="modal-manage-custom-options" style="z-index: 1050;">
+    <div class="modal-box" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-settings-4-fill"></i> Manage, Edit & Delete Options
+        </h3>
+        <button id="btn-close-manage-modal" class="close-btn" type="button">&times;</button>
+      </div>
+
+      <div style="padding: 0 20px 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;">Select Category</label>
+            <select class="form-control" id="manage-modal-target-field" onchange="onManageCategoryChange()" style="width: 100%;">
+              <option value="section">Section</option>
+              <option value="empDesig">Employee Designation (per Section)</option>
+              <option value="mainOffice">Main Office / Sender</option>
+              <option value="officerDesig">Officer Designation</option>
+              <option value="shortSub">SUBJECT IN BRIEF</option>
+              <option value="letterRef">Letter Reference</option>
+              <option value="tapalType">Tapal / Mail Type</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+
+          <div id="manage-modal-section-group" style="display: none;">
+            <label style="font-size: 11px; font-weight: 800; color: var(--gov-navy-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;">
+              <i class="ri-filter-3-line"></i> Filter by Section
+            </label>
+            <select class="form-control" id="manage-modal-section-select" onchange="renderManageOptionsList()" style="width: 100%;">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div id="manage-modal-office-group" style="display: none;">
+            <label style="font-size: 11px; font-weight: 800; color: var(--gov-navy-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;">
+              <i class="ri-government-line"></i> Filter by Office
+            </label>
+            <select class="form-control" id="manage-modal-office-select" onchange="renderManageOptionsList()" style="width: 100%;">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;" id="manage-options-count-badge">Active Options:</span>
+          <button type="button" id="btn-manage-add-quick" onclick="openAddCustomOptionModalFromManage()" class="btn btn-sm btn-secondary" style="font-size: 11px; font-weight: 700; padding: 4px 10px; display: flex; align-items: center; gap: 4px;">
+            <i class="ri-add-line"></i> Add New Option
+          </button>
+        </div>
+
+        <div id="manage-modal-options-list">
+          <!-- Dynamic Options with Edit and Delete buttons -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-primary" id="btn-done-manage-modal">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT / RENAME OPTION DIALOG -->
+  <div class="modal-overlay" id="modal-edit-custom-option" style="z-index: 1200;">
+    <div class="modal-box" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-edit-line"></i> Edit / Rename Option
+        </h3>
+        <button id="btn-close-edit-custom-modal" class="close-btn" type="button">&times;</button>
+      </div>
+
+      <form id="form-edit-custom-option" novalidate style="padding: 0 20px 20px;">
+        <input type="hidden" id="edit-modal-target-cat" value="">
+        <input type="hidden" id="edit-modal-old-val" value="">
+        <input type="hidden" id="edit-modal-old-sec" value="">
+
+        <!-- Category Badge -->
+        <div style="margin-bottom: 14px;">
+          <span id="edit-modal-cat-badge" style="font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 4px; background: var(--gov-gold-bg); color: var(--gov-gold-dark); border: 1px solid var(--gov-gold); text-transform: uppercase;">
+            Category
+          </span>
+        </div>
+
+        <!-- If editing a Section -->
+        <div id="edit-modal-section-fields" style="display: none;">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>
+              Section Short Code <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="text" id="edit-modal-section-code" class="form-control" style="width: 100%; font-weight: 700; text-transform: uppercase;">
+          </div>
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>
+              Section Full Name <span style="color: #ef4444;">*</span>
+            </label>
+            <input type="text" id="edit-modal-section-fullname" class="form-control" style="width: 100%;">
+          </div>
+        </div>
+
+        <!-- If editing Employee Designation: Section assignment -->
+        <div class="form-group" id="edit-modal-section-assignment-group" style="margin-bottom: 14px; display: none;">
+          <label>
+            <i class="ri-git-branch-line"></i> Section / Branch Assignment
+          </label>
+          <select class="form-control" id="edit-modal-assign-section" style="width: 100%;">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- General Option Value input -->
+        <div class="form-group" id="edit-modal-general-value-group" style="margin-bottom: 20px;">
+          <label id="edit-modal-option-value-label">
+            Option Title / Name <span style="color: #ef4444;">*</span>
+          </label>
+          <input type="text" id="edit-modal-new-val" class="form-control" style="width: 100%;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-edit-custom-modal">Cancel</button>
+          <button type="submit" id="btn-submit-edit-custom-option" class="btn btn-primary">
+            <i class="ri-save-line"></i> Update & Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: VIEW TAPAL DETAILS -->
+  <div class="modal-overlay" id="view-tapal-modal">
+    <div class="modal-box" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-eye-line"></i> Tapal Details <span id="view-modal-sno-badge" style="color: var(--gov-gold-light);"></span>
+        </h3>
+        <button id="btn-close-view-modal" class="close-btn" type="button">&times;</button>
+      </div>
+
+      <div style="padding: 0 20px 20px;">
+        <div id="view-modal-body-content" style="max-height: 480px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px;">
+          <!-- Dynamically populated key-value pairs -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-secondary" id="btn-done-view-modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT TAPAL ENTRY -->
+  <div class="modal-overlay" id="edit-tapal-modal">
+    <div class="modal-box" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-edit-line"></i> Edit Tapal Entry <span id="edit-modal-title-sno" style="color: var(--gov-gold-light);"></span>
+        </h3>
+        <button class="close-btn" id="btn-close-edit-modal">&times;</button>
+      </div>
+
+      <!-- Progressive Header Navigation Tabs for Edit -->
+      <div class="modal-stepper-header">
+        <div class="modal-step-tab active" id="edit-step-tab-1" onclick="onEditTabClick(1)">
+          <i class="ri-inbox-archive-line"></i> <span>Inward Receipt</span>
+        </div>
+        <div class="modal-step-tab" id="edit-step-tab-2" onclick="onEditTabClick(2)">
+          <i class="ri-file-list-3-line"></i> <span>Letter & Action</span>
+        </div>
+        <div class="modal-step-tab" id="edit-step-tab-3" onclick="onEditTabClick(3)">
+          <i class="ri-send-plane-fill"></i> <span>Dispatch Details</span>
+        </div>
+      </div>
+
+      <form id="edit-tapal-form">
+        <input type="hidden" id="edit-record-id">
+
+        <!-- STEP 1: INWARD RECEIPT -->
+        <div class="modal-step-pane active" id="edit-step-pane-1">
+          <div class="step-card-box" style="border-left: 3px solid #38bdf8;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tapal / Mail Type <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-tapal-type" required>
+                  <option value="Tapal">Tapal</option>
+                  <option value="Email">Email</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Current Number (Inward No) <span style="color: #ef4444;">*</span></label>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" class="form-control" id="edit-curr-no" placeholder="e.g. 0888 or 1520" required>
+              </div>
+
+              <div class="form-group">
+                <label>Office Seal Date</label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-seal-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-seal-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Received in Section Date (TAPAL)</label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-rec-sec-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-rec-sec-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Section <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-tech-sec-ref" required>
+                  <option value="">-- Select Section --</option>
+                  <option value="ACCT">ACCT (Accounts)</option>
+                  <option value="DB">DB (Drawing Branch)</option>
+                  <option value="ESTT">ESTT (Establishment)</option>
+                  <option value="R&B">R&B (Roads & Bridges)</option>
+                  <option value="PLG">PLG (Planning)</option>
+                  <option value="CRIF">CRIF (Budget & CRIF)</option>
+                  <option value="CONT">CONT (Contract)</option>
+                  <option value="CMGT">CMGT (Contract Management)</option>
+                  <option value="RSQC">RSQC (Road Safety & QC)</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-edit-modal">Cancel</button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-step-next" onclick="proceedEditStep(1, 2)">
+                Next: Letter & Action <i class="ri-arrow-right-line"></i>
+              </button>
+              <button type="button" class="btn btn-footer-save" onclick="manualSaveDraft('edit', 1)">
+                <i class="ri-save-line"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: LETTER & ACTION DETAILS -->
+        <div class="modal-step-pane" id="edit-step-pane-2">
+          <div class="step-card-box" style="border-left: 3px solid #fbbf24;">
+
+            <!-- TOP HEADER ROW: SELECTED SECTION & EMPLOYEE DESIGNATION -->
+            <div class="modal-step-info-card">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="color: var(--gov-navy-light); font-weight: 800; font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;"><i class="ri-building-line" style="margin-right: 4px;"></i> Selected Section (from Inward Receipt)</label>
+                <div id="edit-selected-section-display" class="form-control" style="font-weight: 700; font-size: 13.5px; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                  <i class="ri-checkbox-circle-fill" style="color: var(--success);"></i>
+                  <span id="edit-selected-section-text">-- Not Selected in Step 1 --</span>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="color: #fbbf24; font-weight: 800; font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;"><i class="ri-user-star-line" style="margin-right: 4px;"></i> Employee Designation <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-emp-desig" style="border-color: rgba(251, 191, 36, 0.4); font-weight: 600;" required>
+                  <option value="">-- Select Section First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Subject <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="edit-subject" required>
+              </div>
+
+              <div class="form-group">
+                <label>Letter Reference No <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="edit-letter-ref" required>
+              </div>
+
+              <div class="form-group">
+                <label>Mail/Letter Date <span style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-letter-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-letter-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Main Office <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-main-office" required>
+                  <option value="">-- Select Main Office --</option>
+                  <option value="GOVT">GOVT</option>
+                  <option value="MORTH">MORTH</option>
+                  <option value="SE">SE</option>
+                  <option value="DE">DE</option>
+                  <option value="CE">CE</option>
+                  <option value="AG">AG</option>
+                  <option value="NHAI">NHAI</option>
+                  <option value="Others">Others</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Officer Designation <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-officer" required>
+                  <option value="">-- Select Main Office First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>SUBJECT IN BRIEF <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" id="edit-short-sub" required>
+                  <option value="">-- Select Section First --</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Status</label>
+                <select class="form-control" id="edit-status">
+                  <option value="Pending">Pending</option>
+                  <option value="Memo">Memo</option>
+                  <option value="Letter">Letter</option>
+                  <option value="Proceedings">Proceedings</option>
+                  <option value="DO Letter">DO Letter</option>
+                  <option value="Office Order">Office Order</option>
+                  <option value="Others">Others</option>
+                  <option value="Filed">Filed</option>
+                  <option value="__ADD_NEW__" style="color: #38bdf8; font-weight: bold;">➕ Add Custom Option...</option>
+                  <option value="__MANAGE_OPTIONS__" style="color: #f87171; font-weight: bold;">🗑️ Manage / Delete Options...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Action Initiated</label>
+                <input type="text" class="form-control" id="edit-action-initiated">
+              </div>
+
+              <div class="form-group">
+                <label id="label-edit-action-init-date">Action Initiated Date <span id="edit-action-init-star" style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-action-init-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-action-init-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label id="label-edit-appr-fc-date">Approval/FC Date <span id="edit-appr-fc-star" style="color: #ef4444;">*</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-appr-fc-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-appr-fc-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>File Reference No <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="edit-file-no" placeholder="e.g. 2121/SA1/NH/2023" required>
+              </div>
+
+              <div class="form-group">
+                <label>Follow Up Cases</label>
+                <input type="text" class="form-control" id="edit-follow-up" placeholder="e.g. Pending reply, Urgent">
+              </div>
+
+              <div class="form-group">
+                <label>Alert Date</label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-follow-up-date-text" placeholder="DD/MM/YYYY">
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-follow-up-date">
+                </div>
+              </div>
+
+              <div class="form-group" style="grid-column: span 2;">
+                <label>Remarks</label>
+                <input type="text" class="form-control" id="edit-remarks" placeholder="Optional remarks">
+              </div>
+
+              <!-- REMINDER HISTORY & LOGS (Active in Edit mode) -->
+              <div class="form-group" style="grid-column: span 2;" id="edit-reminder-history-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label style="color: #fbbf24; font-weight: 700; font-size: 12px; margin-bottom: 0;"><i class="ri-history-line"></i> Reminder History & Logs</label>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="promptAddReminder('edit')" style="padding: 2px 8px; font-size: 11px; color: #38bdf8; border-color: rgba(56,189,248,0.4); font-weight: 700;">
+                    <i class="ri-add-line"></i> + Log Reminder
+                  </button>
+                </div>
+                <div id="edit-reminder-history-list" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(251,191,36,0.3); border-radius: 8px; padding: 10px 12px; max-height: 110px; overflow-y: auto;">
+                  <!-- Populated dynamically via renderEditReminderList() -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" onclick="goToEditStep(1)">
+              <i class="ri-arrow-left-line"></i> Back to Inward
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-step-next" id="btn-edit-step2-next" onclick="proceedEditStep(2, 3)">
+                Next: Dispatch Details <i class="ri-arrow-right-line"></i>
+              </button>
+              <button type="button" class="btn btn-footer-save" onclick="manualSaveDraft('edit', 2)">
+                <i class="ri-save-line"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: DISPATCH & OUTWARD DETAILS -->
+        <div class="modal-step-pane" id="edit-step-pane-3">
+          <div class="step-card-box" style="border-left: 3px solid #34d399;">
+
+            <!-- LINKED TAPAL DETAILS BADGE SUMMARY -->
+            <div class="modal-step-badge-summary">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;"><i class="ri-hashtag"></i> Current Number:</span>
+                <span class="badge" id="edit-dispatch-curr-no-badge" style="font-weight: 800; font-size: 12px; padding: 3px 8px; border-radius: 6px;">--</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;"><i class="ri-file-text-line"></i> File Ref No:</span>
+                <span class="badge" id="edit-dispatch-fileno-badge" style="font-weight: 800; font-size: 12px; padding: 3px 8px; border-radius: 6px;">--</span>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Office letter number <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" id="edit-sent-letter-no" placeholder="e.g. Lr.No. 101/2024/B2" required>
+              </div>
+
+              <!-- Dedicated Accounts Section Voucher / Bill Ref No -->
+              <div class="form-group" id="edit-accounts-ref-group" style="display: none;">
+                <label style="color: #fbbf24; font-weight: 700;"><i class="ri-money-dollar-box-line"></i> Accounts Voucher / Bill Ref No</label>
+                <input type="text" class="form-control" id="edit-accounts-ref-no" placeholder="e.g. BILL-9821/2024" style="border-color: rgba(251,191,36,0.4);">
+              </div>
+
+              <div class="form-group">
+                <label>Dispatch Date <span style="color: #ef4444;">*</span> <span style="font-size: 11px; color: #38bdf8; font-weight: 600;">(Today Only)</span></label>
+                <div class="date-picker-input-wrapper">
+                  <input type="text" class="custom-date-text-input" id="edit-dispatch-date-text" placeholder="DD/MM/YYYY" required>
+                  <button type="button" class="custom-date-picker-btn" tabindex="-1" title="Open Calendar"><i class="ri-calendar-2-line"></i></button>
+                  <input type="date" class="custom-native-date-picker" id="edit-dispatch-date">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Sent To</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" class="form-control" id="edit-sent-to-input" placeholder="e.g. Executive Engineer..." style="flex: 1;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-add-edit-sent-to-tag" style="padding: 0 10px; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);"><i class="ri-add-line"></i> Add</button>
+                </div>
+                <div id="edit-sent-to-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 32px; padding: 4px 8px; background: rgba(15,23,42,0.6); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 8px; align-items: center;">
+                  <!-- Dynamic recipient tags rendered here -->
+                </div>
+                <input type="hidden" id="edit-sent-to" value="">
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <button type="button" class="btn btn-secondary" onclick="goToEditStep(2)">
+              <i class="ri-arrow-left-line"></i> Back to Letter & Action
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-footer-save">
+                <i class="ri-checkbox-circle-fill"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RAISE COMPLAINT / ISSUE MODAL -->
+  <div class="modal-overlay" id="raise-complaint-modal">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-alarm-warning-line"></i>
+          <span>Raise Complaint / Issue</span>
+          <span class="badge" id="complaint-modal-sno" style="margin-left: 8px; font-size: 11px; background: var(--gov-gold-bg); color: var(--gov-gold-dark); border: 1px solid var(--gov-gold);">#0</span>
+        </h3>
+        <button class="close-btn" id="btn-close-complaint-modal">&times;</button>
+      </div>
+
+      <form id="raise-complaint-form" style="padding: 0 20px 20px;">
+        <input type="hidden" id="complaint-record-id">
+
+        <!-- Tapal Summary Card -->
+        <div style="background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Current Number (Inward No):</span>
+            <strong style="color: var(--gov-navy-light); font-size: 13px;" id="complaint-curr-no">0000</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Subject:</span>
+            <span style="color: var(--text-main); font-size: 12px; max-width: 380px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="complaint-subject">-</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Section / Officer:</span>
+            <span style="color: var(--gov-gold-dark); font-weight: 700; font-size: 12px;" id="complaint-sec-officer">-</span>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Issue Type / Category <span style="color: #ef4444;">*</span></label>
+            <select class="form-control" id="complaint-category" required>
+              <option value="Correction / Typo">Correction / Typo in Details</option>
+              <option value="Missing Attachment">Missing Letter Document / Attachment</option>
+              <option value="Wrong Section / Officer Assigned">Wrong Section / Officer Assigned</option>
+              <option value="Delayed SLA / Urgent Follow Up">Delayed SLA / Urgent Follow Up</option>
+              <option value="Dispatch / Outward Query">Dispatch / Outward Query</option>
+              <option value="Other Issue">Other Complaint / Issue</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Priority / Urgency <span style="color: #ef4444;">*</span></label>
+            <select class="form-control" id="complaint-priority" required>
+              <option value="Medium" selected>🟡 Medium</option>
+              <option value="High">🟠 High Priority</option>
+              <option value="Urgent">🚨 Critical / Urgent</option>
+              <option value="Low">🟢 Low Priority</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Raised By (Your Name / Section / Role) <span style="color: #ef4444;">*</span></label>
+            <input type="text" class="form-control" id="complaint-raised-by" placeholder="e.g. Accounts Section / SDO I" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Problem Description / Complaint Details <span style="color: #ef4444;">*</span></label>
+            <textarea class="form-control" id="complaint-message" rows="4" placeholder="Type what is the problem, error, or required correction in detail..." required style="resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-complaint-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="ri-send-plane-fill"></i> Submit & Send to Admin Inbox
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: TAPAL REMINDERS MANAGEMENT -->
+  <div class="modal-overlay" id="modal-tapal-reminders">
+    <div class="modal-box" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3>
+          <i class="ri-notification-3-line"></i> Reminder History & Logs <span id="reminders-modal-sno-badge" style="color: var(--gov-gold-light); font-size: 13px;"></span>
+        </h3>
+        <button class="close-btn" id="btn-close-reminders-modal">&times;</button>
+      </div>
+
+      <div style="padding: 0 20px 20px;">
+        <div id="reminders-modal-record-summary" style="background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-main);"></div>
+
+        <div style="margin-bottom: 16px; background: var(--bg-card-hover); border: 1px solid var(--gov-gold); border-radius: var(--radius-sm); padding: 12px;">
+          <label style="color: var(--gov-gold-dark); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;"><i class="ri-add-circle-line"></i> Log New Reminder</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="new-reminder-text-input" class="form-control" placeholder="e.g. 1st Reminder sent to DE via phone / memo..." style="flex: 1; font-size: 12.5px;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-submit-new-reminder" style="padding: 6px 14px; font-weight: 800; white-space: nowrap;">
+              <i class="ri-send-plane-fill"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <label style="color: var(--text-muted); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block;"><i class="ri-time-line"></i> Reminder Timeline / History</label>
+        <div id="reminders-modal-history-list" style="background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; max-height: 220px; overflow-y: auto;">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+          <button type="button" class="btn btn-secondary" id="btn-done-reminders-modal" style="padding: 6px 20px; font-weight: 700;">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Government Theme Engine, Master Data, Searchable Select, and Application Logic -->
+  <script src="theme.js?v=20260827_13"></script>
+  <script src="data.js?v=20260827_13"></script>
+  <script src="searchable-select.js?v=20260827_13"></script>
+  <script src="app.js?v=20260827_13"></script>
+</body>
+
+</html>
