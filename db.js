@@ -3,21 +3,32 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 // PostgreSQL Connection Pool Config (Supports Local & Supabase Cloud PostgreSQL)
-const connectionUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-const isCloudDb = connectionUrl?.includes('supabase') || process.env.PGHOST?.includes('supabase') || process.env.PGSSL === 'true' || process.env.NODE_ENV === 'production';
+let connectionUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL;
+if (connectionUrl) {
+  // Strip sslmode query parameter to prevent pg internal parser from forcing strict SSL validation
+  connectionUrl = connectionUrl.replace(/([?&])sslmode=[^&]+(&|$)/g, '$1').replace(/[?&]$/, '');
+}
 
 const poolConfig = connectionUrl
-  ? { connectionString: connectionUrl, ssl: isCloudDb ? { rejectUnauthorized: false } : false }
+  ? {
+      connectionString: connectionUrl,
+      ssl: { rejectUnauthorized: false },
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    }
   : {
       host: process.env.PGHOST || process.env.POSTGRES_HOST || 'localhost',
-      port: process.env.PGPORT || 5432,
+      port: parseInt(process.env.PGPORT || process.env.POSTGRES_PORT || 5432, 10),
       database: process.env.PGDATABASE || process.env.POSTGRES_DATABASE || 'postgres',
       user: process.env.PGUSER || process.env.POSTGRES_USER || 'postgres',
       password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD || 'postgres',
-      ssl: isCloudDb ? { rejectUnauthorized: false } : false,
+      ssl: (!process.env.PGHOST || process.env.PGHOST === 'localhost' || process.env.PGHOST === '127.0.0.1')
+        ? false
+        : { rejectUnauthorized: false },
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
     };
 
 const pool = new Pool(poolConfig);
