@@ -3,16 +3,17 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 // PostgreSQL Connection Pool Config (Supports Local & Supabase Cloud PostgreSQL)
-const isCloudDb = process.env.PGHOST?.includes('supabase') || process.env.DATABASE_URL?.includes('supabase') || process.env.PGSSL === 'true';
+const connectionUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+const isCloudDb = connectionUrl?.includes('supabase') || process.env.PGHOST?.includes('supabase') || process.env.PGSSL === 'true' || process.env.NODE_ENV === 'production';
 
-const poolConfig = process.env.DATABASE_URL
-  ? { connectionString: process.env.DATABASE_URL, ssl: isCloudDb ? { rejectUnauthorized: false } : false }
+const poolConfig = connectionUrl
+  ? { connectionString: connectionUrl, ssl: isCloudDb ? { rejectUnauthorized: false } : false }
   : {
-      host: process.env.PGHOST || 'localhost',
+      host: process.env.PGHOST || process.env.POSTGRES_HOST || 'localhost',
       port: process.env.PGPORT || 5432,
-      database: process.env.PGDATABASE || 'postgres',
-      user: process.env.PGUSER || 'postgres',
-      password: process.env.PGPASSWORD || 'postgres',
+      database: process.env.PGDATABASE || process.env.POSTGRES_DATABASE || 'postgres',
+      user: process.env.PGUSER || process.env.POSTGRES_USER || 'postgres',
+      password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD || 'postgres',
       ssl: isCloudDb ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30000,
